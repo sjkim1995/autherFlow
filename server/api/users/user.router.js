@@ -6,6 +6,15 @@ var HttpError = require('../../utils/HttpError');
 var User = require('./user.model');
 var Story = require('../stories/story.model');
 
+function access (user, userId) {
+  console.log("=== Check owner ");
+  if (!user) return false;
+  console.log("Target id:", userId, "user id:", user.id, "admin:", user.isAdmin);
+  let result = (user && (user.id === userId || user.isAdmin))
+  if (!result) console.log("==== reject");
+  return result;
+}
+
 router.param('id', function (req, res, next, id) {
   User.findById(id)
   .then(function (user) {
@@ -41,6 +50,7 @@ router.get('/:id', function (req, res, next) {
 });
 
 router.put('/:id', function (req, res, next) {
+  if (! access( req.user, req.body.id)) return;
   req.requestedUser.update(req.body)
   .then(function (user) {
     res.json(user);
@@ -49,6 +59,7 @@ router.put('/:id', function (req, res, next) {
 });
 
 router.delete('/:id', function (req, res, next) {
+    if (! access( req.user, req.body.id)) return;
   req.requestedUser.destroy()
   .then(function () {
     res.status(204).end();

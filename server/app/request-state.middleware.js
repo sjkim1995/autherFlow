@@ -57,7 +57,6 @@ router.use(function passportSessionMiddleware (req, res, next) {
 });
 */
 router.use(function (req, res, next) {
-  console.log('user', req.user);
   next();
 });
 

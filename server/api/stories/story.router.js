@@ -6,6 +6,16 @@ var HttpError = require('../../utils/HttpError');
 var Story = require('./story.model');
 var User = require('../users/user.model')
 
+
+function access (user, userId) {
+  console.log("=== Check owner ");
+  if (!user) return false;
+  console.log("Target id:", userId, "user id:", user.id, "admin:", user.isAdmin);
+  let result = (user && (user.id === userId || user.isAdmin))
+  if (!result) console.log("==== reject");
+  return result;
+}
+
 router.param('id', function (req, res, next, id) {
   Story.findById(id)
   .then(function (story) {
@@ -28,6 +38,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/', function (req, res, next) {
+      if (! access( req.user, req.body.author_id)) return;
   Story.create(req.body)
   .then(function (story) {
     return story.reload({include: [{model: User, as: 'author'}]});
@@ -47,6 +58,7 @@ router.get('/:id', function (req, res, next) {
 });
 
 router.put('/:id', function (req, res, next) {
+      if (! access( req.user, req.story.author_id)) return;
   req.story.update(req.body)
   .then(function (story) {
     res.json(story);
@@ -55,6 +67,8 @@ router.put('/:id', function (req, res, next) {
 });
 
 router.delete('/:id', function (req, res, next) {
+console.log("The req story is", req.story)
+    if (! access( req.user, req.story.author_id)) return;
   req.story.destroy()
   .then(function () {
     res.status(204).end();
