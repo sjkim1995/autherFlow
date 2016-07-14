@@ -3,10 +3,16 @@
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var User = require('../api/users/user.model');
+const pathToSecrets = "../Auther.config"
+var fs = require('fs');
+
+var configuration = JSON.parse(
+    fs.readFileSync(pathToSecrets)
+);
 
 module.exports = new GoogleStrategy({
-  clientID: '238524570915-ivf9lnhm9bsfq13cle5ap8s28d4lmhrp.apps.googleusercontent.com',
-  clientSecret: 'GST6VQnVmhx1YIB1vDXXB3PF',
+  clientID: configuration.clientID,
+  clientSecret: configuration.clientSecret,
   callbackURL: '/auth/google/callback'
 }, function (token, refreshToken,  profile, triggerSerializationOfUser) {
   // this only runs when somebody logs in through google

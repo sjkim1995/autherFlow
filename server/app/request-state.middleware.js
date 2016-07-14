@@ -3,7 +3,8 @@
 var router = require('express').Router();
 var sessionMiddleware = require('express-session');
 var passport = require('passport');
-
+const pathToSecrets = "../Auther.config"
+var fs = require('fs');
 var User = require('../api/users/user.model');
 
 router.use(function (req, res, next) {
@@ -18,8 +19,13 @@ router.use(function (req, res, next) {
   });
 });
 
+
+var configuration = JSON.parse(
+    fs.readFileSync(pathToSecrets)
+);
+console.log("=======", configuration)
 router.use(sessionMiddleware({
-  secret: 'tongiscool'
+  secret: configuration.secret
 }));
 
 /*
