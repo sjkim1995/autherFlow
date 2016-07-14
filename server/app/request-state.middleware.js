@@ -23,7 +23,6 @@ router.use(function (req, res, next) {
 var configuration = JSON.parse(
     fs.readFileSync(pathToSecrets)
 );
-console.log("=======", configuration)
 router.use(sessionMiddleware({
   secret: configuration.secret
 }));
